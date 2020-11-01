@@ -1,15 +1,21 @@
+import { useNavigation } from '@react-navigation/native';
+import { auth } from 'firebase';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Button } from 'react-native-paper';
-import InputField from '../components/forms/InputField';
+import InputField from '../../components/forms/InputField';
 
 const LoginScreen: React.FC = () => {
     const { control, handleSubmit, errors, register } = useForm();
+    const navigation = useNavigation();
 
     const onSubmit = (data: any) => {
-        console.log(data);
+        auth().signInWithEmailAndPassword(data.login, data.password)
+            .catch(() => {
+                alert('Login failed')
+            })
     }
 
     return (
@@ -38,15 +44,15 @@ const LoginScreen: React.FC = () => {
                     }}
                     style={styles.input}
                 />
-                <Button icon="login" mode='contained' style={styles.submitButton} >
+                <Button icon="login" mode='contained' style={styles.submitButton} onPress={handleSubmit(onSubmit)} >
                     Login
                 </Button>
-                <Button icon="login" mode='contained' style={styles.submitButton} >
-                    Login with FB
-                </Button>
-                <Button icon="login" mode='contained' style={styles.submitButton} >
-                    Login with Instagram
-                </Button>
+                <Text style={styles.signUpText} onPress={() => navigation.navigate('forgotPassword')}>
+                    I forgot my password
+                </Text>
+                <Text style={styles.signUpText} onPress={() => navigation.navigate('signUp')}>
+                    Don't have an account? Sign up!
+                </Text>
         </ScrollView>
     )
 }
@@ -62,7 +68,7 @@ const styles = StyleSheet.create({
         width: '80%'
     },
     submitButton: {
-        marginTop: '10px'
+        marginTop: 10
     },
     buttonText: {
         fontSize: 18,
@@ -72,6 +78,10 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         backgroundColor: 'transparent',
     },
+    signUpText: {
+        textDecorationLine: 'underline',
+        marginTop: 10
+    }
 })
 
 export default LoginScreen;
